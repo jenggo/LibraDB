@@ -1,17 +1,18 @@
 package LibraDB
 
 import (
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMetaSerialize(t *testing.T) {
 	meta := newEmptyMeta()
 	meta.root = 3
 	meta.freelistPage = 4
-	actual := make([]byte, testPageSize, testPageSize)
+	actual := make([]byte, testPageSize)
 	meta.serialize(actual)
 
 	expected, err := os.ReadFile(getExpectedResultFileName(t.Name()))

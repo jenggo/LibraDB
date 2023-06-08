@@ -2,11 +2,12 @@ package LibraDB
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"os"
 	"strconv"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_AddSingle(t *testing.T) {
@@ -183,7 +184,7 @@ func Test_SplitAndMerge(t *testing.T) {
 	require.NoError(t, err)
 
 	removeTx := db.WriteTx()
-	collection , err = removeTx.GetCollection(collection.name)
+	collection, err = removeTx.GetCollection(collection.name)
 	require.NoError(t, err)
 
 	err = collection.Remove(val)
@@ -926,7 +927,7 @@ func Test_UpdateNode(t *testing.T) {
 
 	item, err = collection.Find(expectedVal)
 	require.NoError(t, err)
-	assert.Equal(t, newvalue, item.value)
+	assert.Equal(t, newvalue, item.Value)
 
 	err = tx2.Commit()
 	require.NoError(t, err)
@@ -940,7 +941,7 @@ func TestSerializeWithoutChildNodes(t *testing.T) {
 		childNodes: childNodes,
 	}
 
-	actual := node.serialize(make([]byte, testPageSize, testPageSize))
+	actual := node.serialize(make([]byte, testPageSize))
 
 	expectedPage, err := os.ReadFile(getExpectedResultFileName(t.Name()))
 	require.NoError(t, err)
@@ -972,7 +973,7 @@ func TestSerializeWithChildNodes(t *testing.T) {
 		childNodes: childNodes,
 	}
 
-	actual := node.serialize(make([]byte, testPageSize, testPageSize))
+	actual := node.serialize(make([]byte, testPageSize))
 
 	expectedPage, err := os.ReadFile(getExpectedResultFileName(t.Name()))
 	require.NoError(t, err)

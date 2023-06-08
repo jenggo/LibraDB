@@ -1,17 +1,18 @@
 package LibraDB
 
 import (
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestFreelistSerialize(t *testing.T) {
 	freelist := newFreelist()
 	freelist.maxPage = 5
 	freelist.releasedPages = []pgnum{1, 2, 3}
-	actual := freelist.serialize(make([]byte, testPageSize, testPageSize))
+	actual := freelist.serialize(make([]byte, testPageSize))
 
 	expected, err := os.ReadFile(getExpectedResultFileName(t.Name()))
 	require.NoError(t, err)

@@ -6,13 +6,12 @@ import (
 )
 
 type Collection struct {
-	name []byte
-	root pgnum
+	name    []byte
+	root    pgnum
 	counter uint64
 
 	// associated transaction
 	tx *tx
-
 }
 
 func newCollection(name []byte, root pgnum) *Collection {
@@ -47,14 +46,14 @@ func (c *Collection) serialize() *Item {
 }
 
 func (c *Collection) deserialize(item *Item) {
-	c.name = item.key
+	c.name = item.Key
 
-	if len(item.value) != 0 {
+	if len(item.Value) != 0 {
 		leftPos := 0
-		c.root = pgnum(binary.LittleEndian.Uint64(item.value[leftPos:]))
+		c.root = pgnum(binary.LittleEndian.Uint64(item.Value[leftPos:]))
 		leftPos += pageNumSize
 
-		c.counter = binary.LittleEndian.Uint64(item.value[leftPos:])
+		c.counter = binary.LittleEndian.Uint64(item.Value[leftPos:])
 		leftPos += counterSize
 	}
 }
@@ -85,13 +84,13 @@ func (c *Collection) Put(key []byte, value []byte) error {
 	}
 
 	// Find the path to the node where the insertion should happen
-	insertionIndex, nodeToInsertIn, ancestorsIndexes, err := root.findKey(i.key, false)
+	insertionIndex, nodeToInsertIn, ancestorsIndexes, err := root.findKey(i.Key, false)
 	if err != nil {
 		return err
 	}
 
 	// If key already exists
-	if nodeToInsertIn.items != nil && insertionIndex < len(nodeToInsertIn.items) && bytes.Compare(nodeToInsertIn.items[insertionIndex].key, key) == 0 {
+	if bytes.Equal(nodeToInsertIn.items[insertionIndex].Key, key) {
 		nodeToInsertIn.items[insertionIndex] = i
 	} else {
 		// Add item to the leaf node
@@ -208,10 +207,12 @@ func (c *Collection) Remove(key []byte) error {
 }
 
 // getNodes returns a list of nodes based on their indexes (the breadcrumbs) from the root
-//           p
-//       /       \
-//     a          b
-//  /     \     /   \
+//
+//	         p
+//	     /       \
+//	   a          b
+//	/     \     /   \
+//
 // c       d   e     f
 // For [0,1,0] -> p,b,e
 func (c *Collection) getNodes(indexes []int) ([]*Node, error) {

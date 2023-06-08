@@ -1,10 +1,11 @@
 package LibraDB
 
 import (
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_GetAndCreateCollection(t *testing.T) {
@@ -64,8 +65,8 @@ func Test_CreateCollectionPutItem(t *testing.T) {
 	item, err := createdCollection.Find(newKey)
 	require.NoError(t, err)
 
-	assert.Equal(t, newKey, item.key)
-	assert.Equal(t, newVal, item.value)
+	assert.Equal(t, newKey, item.Key)
+	assert.Equal(t, newVal, item.Value)
 }
 
 func Test_DeleteCollection(t *testing.T) {
@@ -116,10 +117,10 @@ func Test_DeleteItem(t *testing.T) {
 	item, err := createdCollection.Find(newKey)
 	require.NoError(t, err)
 
-	assert.Equal(t, newKey, item.key)
-	assert.Equal(t, newVal, item.value)
+	assert.Equal(t, newKey, item.Key)
+	assert.Equal(t, newVal, item.Value)
 
-	err = createdCollection.Remove(item.key)
+	err = createdCollection.Remove(item.Key)
 	require.NoError(t, err)
 
 	item, err = createdCollection.Find(newKey)
@@ -132,8 +133,8 @@ func TestSerializeCollection(t *testing.T) {
 	require.NoError(t, err)
 
 	expected := &Item{
-		key:   []byte("collection1"),
-		value: expectedCollectionValue,
+		Key:   []byte("collection1"),
+		Value: expectedCollectionValue,
 	}
 
 	collection := &Collection{
@@ -156,8 +157,8 @@ func TestDeserializeCollection(t *testing.T) {
 	}
 
 	collection := &Item{
-		key:   []byte("collection1"),
-		value: expectedCollectionValue,
+		Key:   []byte("collection1"),
+		Value: expectedCollectionValue,
 	}
 	actual := newEmptyCollection()
 	actual.deserialize(collection)

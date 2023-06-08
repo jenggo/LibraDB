@@ -1,5 +1,7 @@
 # LibraDB
 
+`Forking from github.com/amit-davidson/LibraDB, very minor modification, just make *LibraDB.Item accessible globally`
+
 [![made-with-Go](https://github.com/go-critic/go-critic/workflows/Go/badge.svg)](http://golang.org)
 [![made-with-Go](https://img.shields.io/badge/Made%20with-Go-1f425f.svg)](http://golang.org)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
@@ -9,21 +11,21 @@
 LibraDB is a simple, persistent key/value store written in pure Go. The project aims to provide a working yet simple
 example of a working database. If you're interested in databases, I encourage you to start here.
 
-This database accompanies  my [blog post](https://betterprogramming.pub/build-a-nosql-database-from-the-scratch-in-1000-lines-of-code-8ed1c15ed924) on how to write a database from scratch.
+This database accompanies  my [blog post](https://betterprogramming.pub/build-a-nosql-database-from-the-scratch-in-1000-lines-of-code-8ed1c15ed924) on how to write a database from scratch. `--> which is very long, but very interesting to read`
 
 ## Installing
 
 To start using LibraDB, install Go and run `go get`:
 
 ```sh
-go get -u github.com/amit-davidson/LibraDB
+go get -u github.com/jenggo/LibraDB
 ```
 
 ## Basic usage
 ```go
 package main
 
-import "github.com/amit-davidson/LibraDB"
+import "github.com/jenggo/LibraDB"
 
 func main() {
 	path := "libra.db"
@@ -110,3 +112,4 @@ if err := collection.Remove(key); err != nil {
 }
 _ = tx.Commit()
 ```
+

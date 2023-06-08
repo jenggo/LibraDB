@@ -142,7 +142,7 @@ func (d *dal) close() error {
 
 func (d *dal) allocateEmptyPage() *page {
 	return &page{
-		data: make([]byte, d.pageSize, d.pageSize),
+		data: make([]byte, d.pageSize),
 	}
 }
 

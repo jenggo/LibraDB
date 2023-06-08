@@ -6,8 +6,8 @@ import (
 )
 
 type Item struct {
-	key   []byte
-	value []byte
+	Key   []byte
+	Value []byte
 }
 
 type Node struct {
@@ -33,8 +33,8 @@ func NewNodeForSerialization(items []*Item, childNodes []pgnum) *Node {
 
 func newItem(key []byte, value []byte) *Item {
 	return &Item{
-		key:   key,
-		value: value,
+		Key:   key,
+		Value: value,
 	}
 }
 
@@ -72,10 +72,7 @@ func (n *Node) isOverPopulated() bool {
 // canSpareAnElement checks if the node size is big enough to populate a page after giving away one item.
 func (n *Node) canSpareAnElement() bool {
 	splitIndex := n.tx.db.getSplitIndex(n)
-	if splitIndex == -1 {
-		return false
-	}
-	return true
+	return splitIndex != -1
 }
 
 // isUnderPopulated checks if the node size is smaller than the size of a page.
@@ -122,8 +119,8 @@ func (n *Node) serialize(buf []byte) []byte {
 			leftPos += pageNumSize
 		}
 
-		klen := len(item.key)
-		vlen := len(item.value)
+		klen := len(item.Key)
+		vlen := len(item.Value)
 
 		// write offset
 		offset := rightPos - klen - vlen - 2
@@ -131,13 +128,13 @@ func (n *Node) serialize(buf []byte) []byte {
 		leftPos += 2
 
 		rightPos -= vlen
-		copy(buf[rightPos:], item.value)
+		copy(buf[rightPos:], item.Value)
 
 		rightPos -= 1
 		buf[rightPos] = byte(vlen)
 
 		rightPos -= klen
-		copy(buf[rightPos:], item.key)
+		copy(buf[rightPos:], item.Key)
 
 		rightPos -= 1
 		buf[rightPos] = byte(klen)
@@ -200,8 +197,8 @@ func (n *Node) deserialize(buf []byte) {
 // of a key-value pair is returned. It's assumed i <= len(n.items)
 func (n *Node) elementSize(i int) int {
 	size := 0
-	size += len(n.items[i].key)
-	size += len(n.items[i].value)
+	size += len(n.items[i].Key)
+	size += len(n.items[i].Value)
 	size += pageNumSize // 8 is the pgnum size
 	return size
 }
@@ -226,7 +223,7 @@ func (n *Node) nodeSize() int {
 // If the key isn't found, we have 2 options. If exact is true, it means we expect findKey
 // to find the key, so a falsey answer. If exact is false, then findKey is used to locate where a new key should be
 // inserted so the position is returned.
-func (n *Node) findKey(key []byte, exact bool) (int, *Node, []int ,error) {
+func (n *Node) findKey(key []byte, exact bool) (int, *Node, []int, error) {
 	ancestorsIndexes := []int{0} // index of root
 	index, node, err := findKeyHelper(n, key, exact, &ancestorsIndexes)
 	if err != nil {
@@ -235,7 +232,7 @@ func (n *Node) findKey(key []byte, exact bool) (int, *Node, []int ,error) {
 	return index, node, ancestorsIndexes, nil
 }
 
-func findKeyHelper(node *Node, key []byte, exact bool, ancestorsIndexes *[]int) (int, *Node ,error) {
+func findKeyHelper(node *Node, key []byte, exact bool, ancestorsIndexes *[]int) (int, *Node, error) {
 	wasFound, index := node.findKeyInNode(key)
 	if wasFound {
 		return index, node, nil
@@ -260,7 +257,7 @@ func findKeyHelper(node *Node, key []byte, exact bool, ancestorsIndexes *[]int) 
 // isn't found then return the index where it should have been (the first index that key is greater than it's previous)
 func (n *Node) findKeyInNode(key []byte) (bool, int) {
 	for i, existingItem := range n.items {
-		res := bytes.Compare(existingItem.key, key)
+		res := bytes.Compare(existingItem.Key, key)
 		if res == 0 { // Keys match
 			return true, i
 		}
@@ -291,11 +288,12 @@ func (n *Node) addItem(item *Item, insertionIndex int) int {
 // is depicted in the graph below. If it's not a leaf node, then the children has to be moved as well as shown.
 // This may leave the parent unbalanced by having too many items so rebalancing has to be checked for all the ancestors.
 // The split is performed in a for loop to support splitting a node more than once. (Though in practice used only once).
-// 	           n                                        n
-//                 3                                       3,6
-//	      /        \           ------>       /          |          \
-//	   a           modifiedNode            a       modifiedNode     newNode
-//   1,2                 4,5,6,7,8            1,2          4,5         7,8
+//
+//		           n                                        n
+//	                3                                       3,6
+//		      /        \           ------>       /          |          \
+//		   a           modifiedNode            a       modifiedNode     newNode
+//	  1,2                 4,5,6,7,8            1,2          4,5         7,8
 func (n *Node) split(nodeToSplit *Node, nodeToSplitIndex int) {
 	// The first index where min amount of bytes to populate a page is achieved. Then add 1 so it will be split one
 	// index after.

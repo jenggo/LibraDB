@@ -3,11 +3,12 @@ package LibraDB
 import (
 	"bytes"
 	"fmt"
+	"os"
+	"testing"
+
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"os"
-	"testing"
 )
 
 const (
@@ -17,7 +18,7 @@ const (
 	testMinPercentage = 0.2
 	testMaxPercentage = 0.55
 	testValSize       = 255
-	
+
 	mockNumberOfElements = 10
 	expectedFolderPath   = "expected"
 )
@@ -53,8 +54,8 @@ func areTreesEqual(t *testing.T, t1, t2 *Collection) {
 
 func areNodesEqual(t *testing.T, n1, n2 *Node) {
 	for i := 0; i < len(n1.items); i++ {
-		assert.Equal(t, n1.items[i].key, n2.items[i].key)
-		assert.Equal(t, n1.items[i].value, n2.items[i].value)
+		assert.Equal(t, n1.items[i].Key, n2.items[i].Key)
+		assert.Equal(t, n1.items[i].Value, n2.items[i].Value)
 	}
 }
 
@@ -99,7 +100,7 @@ func getExpectedResultFileName(name string) string {
 
 func getTempFileName() string {
 	var id = uuid.New()
-	return fmt.Sprintf("%s%c%s", os.TempDir(), os.PathSeparator,id)
+	return fmt.Sprintf("%s%c%s", os.TempDir(), os.PathSeparator, id)
 }
 
 func memset(buf []byte, count int) []byte {

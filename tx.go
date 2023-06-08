@@ -9,7 +9,7 @@ type tx struct {
 
 	write bool
 
-	db   *DB
+	db *DB
 }
 
 func newTx(db *DB, write bool) *tx {
@@ -98,7 +98,6 @@ func (tx *tx) Commit() error {
 	tx.db.rwlock.Unlock()
 	return nil
 }
-
 
 // This will be used for implementing COW. The idea is to mark all the dirty collection, then for each collection,
 // traverse it's dirty in post order and commit child page. Then take the new page numbers, assign them to the parent,
@@ -196,7 +195,7 @@ func (tx *tx) createCollection(collection *Collection) (*Collection, error) {
 	collectionBytes := collection.serialize()
 
 	rootCollection := tx.getRootCollection()
-	err := rootCollection.Put(collection.name, collectionBytes.value)
+	err := rootCollection.Put(collection.name, collectionBytes.Value)
 	if err != nil {
 		return nil, err
 	}

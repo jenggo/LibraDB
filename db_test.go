@@ -1,9 +1,10 @@
 package LibraDB
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestDB_CreateCollectionPutItem(t *testing.T) {
@@ -23,8 +24,8 @@ func TestDB_CreateCollectionPutItem(t *testing.T) {
 	item, err := createdCollection.Find(newKey)
 	require.NoError(t, err)
 
-	assert.Equal(t, newKey, item.key)
-	assert.Equal(t, newVal, item.value)
+	assert.Equal(t, newKey, item.Key)
+	assert.Equal(t, newVal, item.Value)
 
 	err = tx.Commit()
 	require.NoError(t, err)
@@ -48,8 +49,8 @@ func TestDB_WritersDontBlockReaders(t *testing.T) {
 	item, err := createdCollection.Find(newKey)
 	require.NoError(t, err)
 
-	assert.Equal(t, newKey, item.key)
-	assert.Equal(t, newVal, item.value)
+	assert.Equal(t, newKey, item.Key)
+	assert.Equal(t, newVal, item.Value)
 
 	err = tx.Commit()
 	require.NoError(t, err)
@@ -125,10 +126,10 @@ func TestDB_DeleteItem(t *testing.T) {
 	item, err := createdCollection.Find(newKey)
 	require.NoError(t, err)
 
-	assert.Equal(t, newKey, item.key)
-	assert.Equal(t, newVal, item.value)
+	assert.Equal(t, newKey, item.Key)
+	assert.Equal(t, newVal, item.Value)
 
-	err = createdCollection.Remove(item.key)
+	err = createdCollection.Remove(item.Key)
 	require.NoError(t, err)
 
 	item, err = createdCollection.Find(newKey)
